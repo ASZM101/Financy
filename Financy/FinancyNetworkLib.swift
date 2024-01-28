@@ -45,7 +45,7 @@ class APIManager {
                 print("Error: \(error)")
                 return
             }
-            if let res = response as? HTTPURLResponse {
+            if let _res = response as? HTTPURLResponse {
                 //ok :thumbsup:
             }
         }.resume()
@@ -67,8 +67,8 @@ class APIManager {
                 print("Error: \(error)")
                 return
             }
-            if let res = response as? HTTPURLResponse {
-                //ok :thumbsup:
+            if let res = response as? HTTPURLResponse, let dat = data {
+                print("\(res.statusCode) : \(String(data: dat, encoding: .utf8))")
             }
         }.resume()
     }
@@ -88,12 +88,13 @@ class APIManager {
                 print("Error: \(error)")
                 completion([])
             }
-            if let _res = response as? HTTPURLResponse,
+            if let _ = response as? HTTPURLResponse,
                let hd = data,
                let rs = String(data: hd, encoding: .utf8) {
                 var ret: [Transaction] = [];
                 let splits = rs.split(separator: "\n")
                 for split in splits {
+                    print("Appending \(Transaction.from_str(s: String(split)))")
                     ret.append(Transaction.from_str(s: String(split)))
                 }
                 completion(ret)
