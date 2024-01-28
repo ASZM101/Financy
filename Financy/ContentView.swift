@@ -66,6 +66,7 @@ struct ContentView: View {
                             entries = [""]
                             withdrawals = 0.0;
                             deposits = 0.0;
+                            budget = 0.0
                         }
                         Button("No", role: .cancel) {
                             
