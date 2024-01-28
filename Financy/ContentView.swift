@@ -23,6 +23,33 @@ struct ContentView: View {
                     .font(.largeTitle.weight(.bold))
                     .multilineTextAlignment(.center)
                     .padding()
+                    .onAppear() {
+                        print("appearing")
+                        apiManager.get_transactions {
+                            transactions in
+                            
+                            //formatted as
+                            //+/- $[amount] (MM/DD/YYYY) [reason]
+                            entries = [""]
+                            withdrawals = 0
+                            deposits = 0
+                            for transaction in transactions {
+                                var entry = ""
+                                if (transaction.amount < 0) {
+                                    entry.append("- $")
+                                    withdrawals -= transaction.amount
+                                } else {
+                                    entry.append("+ $")
+                                    deposits += transaction.amount
+                                }
+                                let timestamp = TimeInterval(transaction.timestamp)
+                                let converted = apiManager.as_converted(timestamp: timestamp, format: "MM/dd/yyyy")
+                                entry.append("\(abs(transaction.amount)) (\(converted)) \(transaction.name)")
+                                entries.append(entry)
+                            }
+                            budget = deposits - withdrawals
+                        }
+                    }
                 ProgressView(value: withdrawals, total: deposits)
                     .progressViewStyle(.linear)
                     .padding()
@@ -38,6 +65,7 @@ struct ContentView: View {
                 .multilineTextAlignment(.center)
                 
                 List {
+                    
                     if entries[0] == "" && entries.count == 1 {
                         HStack {
                             Spacer()
@@ -52,6 +80,9 @@ struct ContentView: View {
                     }
                 }
                 .listStyle(.inset)
+                .onAppear() {
+                    print("\(entries.count)")
+                }
                 HStack {
                     NavigationLink(destination: NewEntry(budget: $budget, withdrawals: $withdrawals, deposits: $deposits, isExpense: .constant(false), entries: $entries)) {
                         Image(systemName: "plus.circle.fill")
@@ -95,27 +126,6 @@ struct ContentView: View {
             }
             .onAppear() {
                 budget = deposits - withdrawals
-            }
-            .onAppear() {
-                apiManager.get_transactions {
-                    transactions in
-                    
-                    //formatted as
-                    //+/- $[amount] (MM/DD/YYYY) [reason]
-                    //entries = [""]
-                    for transaction in transactions {
-                        var entry = ""
-                        if (transaction.amount < 0) {
-                            entry.append("- $")
-                        } else {
-                            entry.append("+ $")
-                        }
-                        let timestamp = TimeInterval(transaction.timestamp)
-                        let converted = apiManager.as_converted(timestamp: timestamp, format: "MM/dd/yyyy")
-                        entry.append("\(abs(transaction.amount)) (\(converted)) \(transaction.name)")
-                        
-                    }
-                }
             }
         }
     }

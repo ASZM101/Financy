@@ -50,6 +50,7 @@ struct NewEntry: View {
                             aBkgd = "lightGrey"
                         }
                         if(description != "" && amount != 0.0){
+                            print("\(APIManager.bearer)")
                             if(isExpense) {
                                 withdrawals += amount
                                 budget -= amount
