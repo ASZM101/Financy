@@ -15,14 +15,29 @@ struct Article: View {
             .multilineTextAlignment(.center)
             .padding()
         List {
-            NavigationLink(destination: EmergencyFunds()) {
+            Section {
+                NavigationLink(destination: EmergencyFunds()) {
+                    Text("Emergency Funds Article")
+                }
+                NavigationLink(destination: Quiz()) {
+                    Text("Emergency Funds Quiz")
+                }
+            } header: {
                 Text("Emergency Funds")
             }
-            NavigationLink(destination: Investments()) {
+            Section {
+                NavigationLink(destination: Investments()) {
+                    Text("Investments Article")
+                }
+                NavigationLink(destination: Quiz2()) {
+                    Text("Emergency Funds Quiz")
+                }
+            } header: {
                 Text("Investments")
             }
         }
-        .listStyle(.inset)
+        .listStyle(.sidebar)
+        .scrollContentBackground(.hidden)
     }
 }
 #Preview {

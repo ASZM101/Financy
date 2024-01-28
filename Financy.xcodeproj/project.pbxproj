@@ -19,6 +19,8 @@
 		20A77CEE2B669E11008CFC34 /* WebView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20A77CED2B669E11008CFC34 /* WebView.swift */; };
 		20A77CF02B66A057008CFC34 /* EmergencyFunds.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20A77CEF2B66A057008CFC34 /* EmergencyFunds.swift */; };
 		20A77CF22B66A05F008CFC34 /* Investments.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20A77CF12B66A05F008CFC34 /* Investments.swift */; };
+		20A77CF42B66A3CE008CFC34 /* Quiz.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20A77CF32B66A3CE008CFC34 /* Quiz.swift */; };
+		20A77CF62B66AF87008CFC34 /* Quiz2.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20A77CF52B66AF87008CFC34 /* Quiz2.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -35,6 +37,8 @@
 		20A77CED2B669E11008CFC34 /* WebView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebView.swift; sourceTree = "<group>"; };
 		20A77CEF2B66A057008CFC34 /* EmergencyFunds.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmergencyFunds.swift; sourceTree = "<group>"; };
 		20A77CF12B66A05F008CFC34 /* Investments.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Investments.swift; sourceTree = "<group>"; };
+		20A77CF32B66A3CE008CFC34 /* Quiz.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Quiz.swift; sourceTree = "<group>"; };
+		20A77CF52B66AF87008CFC34 /* Quiz2.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Quiz2.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -71,6 +75,8 @@
 				2027F0CC2B65859700E1B8C5 /* ContentView.swift */,
 				20A77CEB2B669A0C008CFC34 /* Article.swift */,
 				20A77CEF2B66A057008CFC34 /* EmergencyFunds.swift */,
+				20A77CF32B66A3CE008CFC34 /* Quiz.swift */,
+				20A77CF52B66AF87008CFC34 /* Quiz2.swift */,
 				20A77CF12B66A05F008CFC34 /* Investments.swift */,
 				20A77CED2B669E11008CFC34 /* WebView.swift */,
 				204FC8B52B663D1B00155B84 /* NewEntry.swift */,
@@ -168,7 +174,9 @@
 				20A77CF22B66A05F008CFC34 /* Investments.swift in Sources */,
 				2027F0CD2B65859700E1B8C5 /* ContentView.swift in Sources */,
 				20A77CEA2B664F80008CFC34 /* Utility.swift in Sources */,
+				20A77CF42B66A3CE008CFC34 /* Quiz.swift in Sources */,
 				2027F0CB2B65859700E1B8C5 /* FinancyApp.swift in Sources */,
+				20A77CF62B66AF87008CFC34 /* Quiz2.swift in Sources */,
 				204FC8B62B663D1B00155B84 /* NewEntry.swift in Sources */,
 				204FC8B82B663D2300155B84 /* Login.swift in Sources */,
 			);
