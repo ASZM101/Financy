@@ -60,7 +60,14 @@ class APIManager {
     func transactions(bearer: String) -> AnyPublisher<[String], Error> {
         let headers = ["Content-Type": "application/text"]
         return sendRequest(url: "http://localhost:8000/transactions/\(bearer)", headers: headers, method: "GET", body: "")
-            .map { $0.substring(from: 4).components(separatedBy: "\n") }
+            .map { response in
+                if let index = response.firstIndex(of: ":") {
+                    let startIndex = response.index(after: index)
+                    return response[startIndex...].components(separatedBy: "\n")
+                } else {
+                    return []
+                }
+            }
             .eraseToAnyPublisher()
     }
 }
