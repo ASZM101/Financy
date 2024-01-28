@@ -8,20 +8,25 @@
 import SwiftUI
 
 struct ContentView: View {
+    let apiManager = APIManager.shared
     @State var budget: Double = 0.0
     @State var withdrawals: Double = 0.0
     @State var deposits: Double = 0.0
     @State var isExpense: Bool = false
     @State var entries = [""]
     @State var clear = false
+     
     var body: some View {
         NavigationView {
             VStack {
                 Text("Balance: $" + String(budget))
                     .font(.largeTitle.weight(.bold))
+                    .multilineTextAlignment(.center)
+                    .padding()
                 ProgressView(value: withdrawals, total: deposits)
                     .progressViewStyle(.linear)
                     .padding()
+                    .tint(.yellow)
                 HStack {
                     Text("$" + String(withdrawals) + "\nwithdrawn")
                         .font(.title3.weight(.semibold))
@@ -67,10 +72,17 @@ struct ContentView: View {
                             withdrawals = 0.0;
                             deposits = 0.0;
                             budget = 0.0
+                            apiManager.drop_all()
                         }
                         Button("No", role: .cancel) {
                             
                         }
+                    }
+                    Spacer()
+                    NavigationLink(destination: Article()) {
+                        Image(systemName: "book.closed.fill")
+                            .font(.system(size: 50))
+                            .foregroundColor(.blue)
                     }
                     Spacer()
                     NavigationLink(destination: NewEntry(budget: $budget, withdrawals: $withdrawals, deposits: $deposits, isExpense: .constant(true), entries: $entries)) {
@@ -83,6 +95,27 @@ struct ContentView: View {
             }
             .onAppear() {
                 budget = deposits - withdrawals
+            }
+            .onAppear() {
+                apiManager.get_transactions {
+                    transactions in
+                    
+                    //formatted as
+                    //+/- $[amount] (MM/DD/YYYY) [reason]
+                    //entries = [""]
+                    for transaction in transactions {
+                        var entry = ""
+                        if (transaction.amount < 0) {
+                            entry.append("- $")
+                        } else {
+                            entry.append("+ $")
+                        }
+                        let timestamp = TimeInterval(transaction.timestamp)
+                        let converted = apiManager.as_converted(timestamp: timestamp, format: "MM/dd/yyyy")
+                        entry.append("\(abs(transaction.amount)) (\(converted)) \(transaction.name)")
+                        
+                    }
+                }
             }
         }
     }

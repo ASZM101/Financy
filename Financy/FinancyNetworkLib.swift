@@ -1,73 +1,105 @@
 import SwiftUI
 import Combine
 
+struct Transaction {
+    let timestamp: any UnsignedInteger
+    let name: String
+    let amount: Double
+    
+    static func from_str(s: String) -> Transaction {
+        let splits = s.split(separator: ":")
+        if
+            let timestamp = UInt(splits[0]),
+            let amount = Double(splits[2]) {
+            
+            return Transaction(timestamp: timestamp, name: String(splits[1]), amount: amount)
+        } else {
+            print("using default")
+            return Transaction(timestamp: 1 as! (any UnsignedInteger), name: "null", amount: 0)
+        }
+    }
+}
 class APIManager {
     static let shared = APIManager()
+    static var bearer = "bearer_nullBearer"
     
-    private var cancellables: Set<AnyCancellable> = []
-
-    private func format(response: HTTPURLResponse, body: String) -> String {
-        return "\(response.statusCode):\(body)"
+    func as_converted(timestamp: TimeInterval, format: String) -> String {
+        let date = Date(timeIntervalSince1970: timestamp)
+        let fmt = DateFormatter()
+        fmt.dateFormat = format
+        
+        return fmt.string(from: date)
     }
-
-    func sendRequest(url: String, headers: [String: String], method: String, body: String) -> AnyPublisher<String, Error> {
-        guard let url = URL(string: url) else {
-            return Fail(error: NSError(domain: "Invalid URL", code: 0, userInfo: nil))
-                .eraseToAnyPublisher()
+    func drop_all() {
+        guard let url = URL(string: "http://localhost:8000/dump/\(APIManager.bearer)") else {
+            print("Invalid URL")
+            return
         }
-
+        
         var request = URLRequest(url: url)
-        request.httpMethod = method
-        request.httpBody = body.data(using: .utf8)
-
-        for (key, value) in headers {
-            request.setValue(value, forHTTPHeaderField: key)
+        request.httpMethod = "POST"
+        
+        URLSession.shared.dataTask(with: request) {
+            data, response, error in
+            if let error = error {
+                print("Error: \(error)")
+                return
+            }
+            if let res = response as? HTTPURLResponse {
+                //ok :thumbsup:
+            }
+        }.resume()
+    }
+    func transaction(forWhat: String, amount: Double) {
+        guard let url = URL(string: "http://localhost:8000/transact") else {
+            print("Invalid URL")
+            return
         }
-
-        return URLSession.shared.dataTaskPublisher(for: request)
-            .tryMap { data, response in
-                guard let httpResponse = response as? HTTPURLResponse else {
-                    throw URLError(.badServerResponse)
-                }
-                return self.format(response: httpResponse, body: String(data: data, encoding: .utf8) ?? "")
+        
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        request.addValue(APIManager.bearer, forHTTPHeaderField: "x-bearer")
+        request.httpBody = "\(forWhat);\(amount)".data(using: .utf8)
+        
+        URLSession.shared.dataTask(with: request) {
+            data, response, error in
+            if let error = error {
+                print("Error: \(error)")
+                return
             }
-            .receive(on: DispatchQueue.main)
-            .eraseToAnyPublisher()
-    }
-
-    func bearer(username: String, hash: String, expiry: TimeInterval) -> AnyPublisher<String, Error> {
-        let body = "\(username);\(hash);\(expiry)"
-        let headers = ["Content-Type": "application/text"]
-        return sendRequest(url: "http://localhost:8000/key", headers: headers, method: "GET", body: body)
-    }
-
-    func transaction(bearer: String, name: String, amount: Double) -> AnyPublisher<Bool, Error> {
-        let body = "\(name);\(amount)"
-        let headers = [
-            "Content-Type": "application/text",
-            "x-bearer": bearer
-        ]
-        return sendRequest(url: "http://localhost:8000/transaction", headers: headers, method: "POST", body: body)
-            .map { $0.contains("OK") }
-            .eraseToAnyPublisher()
-    }
-
-    func balance(bearer: String) -> AnyPublisher<String, Error> {
-        let headers = ["Content-Type": "application/text"]
-        return sendRequest(url: "http://localhost:8000/balance/\(bearer)", headers: headers, method: "GET", body: "")
-    }
-
-    func transactions(bearer: String) -> AnyPublisher<[String], Error> {
-        let headers = ["Content-Type": "application/text"]
-        return sendRequest(url: "http://localhost:8000/transactions/\(bearer)", headers: headers, method: "GET", body: "")
-            .map { response in
-                if let index = response.firstIndex(of: ":") {
-                    let startIndex = response.index(after: index)
-                    return response[startIndex...].components(separatedBy: "\n")
-                } else {
-                    return []
-                }
+            if let res = response as? HTTPURLResponse {
+                //ok :thumbsup:
             }
-            .eraseToAnyPublisher()
+        }.resume()
+    }
+    
+    func get_transactions(completion: @escaping ([Transaction]) -> Void) {
+        guard let url = URL(string: "http://localhost:8000/transactions/\(APIManager.bearer)") else {
+            print("Invalid URL")
+            return completion([])
+        }
+        
+        var request = URLRequest(url: url)
+        request.httpMethod = "GET"
+        
+        URLSession.shared.dataTask(with: request) {
+            data, response, error in
+            if let error = error {
+                print("Error: \(error)")
+                completion([])
+            }
+            if let _res = response as? HTTPURLResponse,
+               let hd = data,
+               let rs = String(data: hd, encoding: .utf8) {
+                var ret: [Transaction] = [];
+                let splits = rs.split(separator: "\n")
+                for split in splits {
+                    ret.append(Transaction.from_str(s: String(split)))
+                }
+                completion(ret)
+            } else {
+                completion([])
+            }
+        }.resume()
     }
 }

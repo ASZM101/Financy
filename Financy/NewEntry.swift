@@ -8,6 +8,7 @@
 import SwiftUI
 
 struct NewEntry: View {
+    let apiManager = APIManager.shared
     @Environment(\.dismiss) private var dismiss
     @Binding var budget: Double
     @Binding var withdrawals: Double
@@ -40,10 +41,15 @@ struct NewEntry: View {
                         amount = Double(amountStr) ?? 0.0
                         if(description == "") {
                             dBkgd = "lightRed"
+                        } else {
+                            dBkgd = "lightGrey"
                         }
                         if(amount == 0.0) {
                             aBkgd = "lightRed"
                         } else {
+                            aBkgd = "lightGrey"
+                        }
+                        if(description != "" && amount != 0.0){
                             if(isExpense) {
                                 withdrawals += amount
                                 budget -= amount
@@ -52,6 +58,12 @@ struct NewEntry: View {
                                 budget += amount
                             }
                             entries.append((isExpense ? "- $" : "+ $") + String(amount) + " (01/28/2024) " + description)
+                            
+                            var am = amount;
+                            if (isExpense) {
+                                am *= -1
+                            }
+                            apiManager.transaction(forWhat: description, amount: am)
                             dismiss()
                         }
                     } label: {
