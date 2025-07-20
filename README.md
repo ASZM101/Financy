@@ -11,7 +11,7 @@ We created ***Financy*** as a solution to this problem.
 
 ## 🤖 What It Does 🤖
 
-__Financy__ is a budget tracking app with short articles to help you reach your financial goals.
+__Financy__ is a budget tracking app with short educational articles to help you reach your financial goals.
 
 ## 🏗 How We Built It 🏗
 
